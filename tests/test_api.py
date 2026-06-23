@@ -108,9 +108,9 @@ def test_repository_dependency_override(client: TestClient) -> None:
     """
     from typing import Any
 
-    from base_fast_api.api.v1.endpoints.items import get_items_repository
-    from base_fast_api.main import app
-    from base_fast_api.repositories.base import BaseItemsRepository
+    from star_wars_api_wrapper.api.v1.endpoints.items import get_items_repository
+    from star_wars_api_wrapper.main import app
+    from star_wars_api_wrapper.repositories.base import BaseItemsRepository
 
     class DummyRepository(BaseItemsRepository):
         async def list(self, skip: int = 0, limit: int = 10) -> list[dict[str, Any]]:

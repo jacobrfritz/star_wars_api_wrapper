@@ -1,10 +1,10 @@
 from typing import Any
 
-from base_fast_api.core.exceptions import NotFoundException
-from base_fast_api.repositories.base import BaseItemsRepository
-from base_fast_api.repositories.items import InMemoryItemsRepository
-from base_fast_api.schemas.items import ItemCreate, ItemResponse, ItemUpdate
 from fastapi import APIRouter, Depends, Query
+from star_wars_api_wrapper.core.exceptions import NotFoundException
+from star_wars_api_wrapper.repositories.base import BaseItemsRepository
+from star_wars_api_wrapper.repositories.items import InMemoryItemsRepository
+from star_wars_api_wrapper.schemas.items import ItemCreate, ItemResponse, ItemUpdate
 
 router = APIRouter()
 

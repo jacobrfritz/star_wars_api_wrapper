@@ -1,8 +1,8 @@
 import time
 from typing import Any
 
-from base_fast_api.config import settings
 from fastapi import APIRouter
+from star_wars_api_wrapper.config import settings
 
 router = APIRouter()
 

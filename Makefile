@@ -22,4 +22,4 @@ typecheck:
 	uv run mypy src
 
 run:
-	uv run base_fast_api --reload
+	uv run star_wars_api_wrapper --reload

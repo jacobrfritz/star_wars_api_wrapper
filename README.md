@@ -1,4 +1,4 @@
-# base_fast_api
+# star_wars_api_wrapper
 
 A production-ready, highly flexible, and containerized FastAPI template using `uv` for lightning-fast dependency management and packaging.
 
@@ -46,7 +46,7 @@ Common development tasks can be run using the provided `Makefile` or directly vi
 | Task | Make Command | Direct `uv` Command | Description |
 | :--- | :--- | :--- | :--- |
 | **Sync Dependencies** | `make install` | `uv sync` | Install or sync dependencies. |
-| **Run API Web Server** | `make run` | `uv run base_fast_api --reload` | Run the application with auto-reloading. |
+| **Run API Web Server** | `make run` | `uv run star_wars_api_wrapper --reload` | Run the application with auto-reloading. |
 | **Run Test Suite** | `make test` | `uv run pytest` | Run all test suites. |
 | **Watch Tests** | `make test-watch` | `uv run ptw` | Watch files and run tests on save. |
 | **Coverage Report** | `make test-cov` | `uv run pytest --cov=src --cov-report=term-missing` | Run tests with coverage output. |
@@ -74,7 +74,7 @@ Once the server is running, visit **[http://127.0.0.1:8000/docs](http://127.0.0.
 ├── pyproject.toml
 ├── uv.lock
 ├── src/
-│   └── base_fast_api/
+│   └── star_wars_api_wrapper/
 │       ├── __init__.py
 │       ├── api/
 │       │   └── v1/
@@ -99,8 +99,8 @@ Once the server is running, visit **[http://127.0.0.1:8000/docs](http://127.0.0.
     └── test_main.py
 ```
 
-- `src/base_fast_api/config.py`: Application config definitions using Pydantic Settings.
-- `src/base_fast_api/core/exceptions.py`: Custom HTTP application exceptions and error-formatting handlers.
-- `src/base_fast_api/middleware/correlation_id.py`: Tracing middleware attaching `X-Correlation-ID` to logs and requests.
-- `src/base_fast_api/api/`: Endpoint definitions separated by versions.
+- `src/star_wars_api_wrapper/config.py`: Application config definitions using Pydantic Settings.
+- `src/star_wars_api_wrapper/core/exceptions.py`: Custom HTTP application exceptions and error-formatting handlers.
+- `src/star_wars_api_wrapper/middleware/correlation_id.py`: Tracing middleware attaching `X-Correlation-ID` to logs and requests.
+- `src/star_wars_api_wrapper/api/`: Endpoint definitions separated by versions.
 - `tests/conftest.py`: Shared pytest client configuration and overrides.

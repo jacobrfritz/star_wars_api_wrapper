@@ -3,7 +3,7 @@ import sys
 
 import uvicorn
 
-from base_fast_api.config import settings
+from star_wars_api_wrapper.config import settings
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
@@ -32,7 +32,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 def main() -> None:
     parsed_args = parse_args(sys.argv[1:])
     uvicorn.run(
-        "base_fast_api.main:app",
+        "star_wars_api_wrapper.main:app",
         host=parsed_args.host,
         port=parsed_args.port,
         reload=parsed_args.reload,

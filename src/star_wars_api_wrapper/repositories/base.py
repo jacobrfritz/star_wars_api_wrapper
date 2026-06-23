@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from base_fast_api.schemas.items import ItemCreate, ItemUpdate
+from star_wars_api_wrapper.schemas.items import ItemCreate, ItemUpdate
 
 
 class BaseItemsRepository(ABC):

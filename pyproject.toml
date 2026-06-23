@@ -1,5 +1,5 @@
 [project]
-name = "base_fast_api"
+name = "star_wars_api_wrapper"
 version = "0.1.0"
 description = "A default FastAPI template using uv."
 readme = "README.md"
@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-base_fast_api = "base_fast_api.cli:main"
+star_wars_api_wrapper = "star_wars_api_wrapper.cli:main"
 
 [project.optional-dependencies]
 # Analytics & Data Manipulation

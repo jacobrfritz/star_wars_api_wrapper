@@ -9,7 +9,7 @@ os.environ["ENV"] = "testing"
 os.environ["LOG_FILE"] = ""  # Disable file logging during test runs
 os.environ["DEBUG"] = "true"
 
-from base_fast_api.main import app  # noqa: E402
+from star_wars_api_wrapper.main import app  # noqa: E402
 
 
 @pytest.fixture

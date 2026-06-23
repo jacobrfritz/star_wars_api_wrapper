@@ -1,4 +1,4 @@
-# src/base_fast_api/logger.py
+# src/star_wars_api_wrapper/logger.py
 import json
 import logging
 import os
@@ -100,7 +100,9 @@ class JSONFormatter(logging.Formatter):
 
         # Automatically inject correlation_id if set in the context
         try:
-            from base_fast_api.middleware.correlation_id import get_correlation_id
+            from star_wars_api_wrapper.middleware.correlation_id import (
+                get_correlation_id,
+            )
 
             cid = get_correlation_id()
             if cid and "correlation_id" not in extra:
@@ -212,7 +214,9 @@ class ConsoleFormatter(logging.Formatter):
         # Automatically inject correlation_id if set in context and
         # not explicitly logged
         try:
-            from base_fast_api.middleware.correlation_id import get_correlation_id
+            from star_wars_api_wrapper.middleware.correlation_id import (
+                get_correlation_id,
+            )
 
             cid = get_correlation_id()
             if cid and not any(x.startswith("correlation_id=") for x in extra_parts):

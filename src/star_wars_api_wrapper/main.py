@@ -6,17 +6,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from base_fast_api.api.v1.router import api_router
-from base_fast_api.config import settings
-from base_fast_api.core.exceptions import (
+from star_wars_api_wrapper.api.v1.router import api_router
+from star_wars_api_wrapper.config import settings
+from star_wars_api_wrapper.core.exceptions import (
     APIException,
     api_exception_handler,
     unhandled_exception_handler,
     validation_exception_handler,
 )
-from base_fast_api.logger import get_logger, setup_logging
-from base_fast_api.middleware.correlation_id import CorrelationIDMiddleware
-from base_fast_api.middleware.logging import RequestLoggingMiddleware
+from star_wars_api_wrapper.logger import get_logger, setup_logging
+from star_wars_api_wrapper.middleware.correlation_id import CorrelationIDMiddleware
+from star_wars_api_wrapper.middleware.logging import RequestLoggingMiddleware
 
 logger = get_logger(__name__)
 

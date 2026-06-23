@@ -1,5 +1,5 @@
-from base_fast_api.api.v1.endpoints import health, items
 from fastapi import APIRouter
+from star_wars_api_wrapper.api.v1.endpoints import health, items
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["System"])

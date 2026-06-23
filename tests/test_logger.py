@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from base_fast_api.logger import (
+from star_wars_api_wrapper.logger import (
     ConsoleFormatter,
     JSONFormatter,
     SafeJSONEncoder,
