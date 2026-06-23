@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source directory for hot-reloading development
+      - ./src:/app/src
+      # Persist application logs on host machine
+      - ./logs:/app/logs
+    environment:
+      - ENV=development
+      - DEBUG=true
+      - LOG_FILE=logs/app.log
+    # Run with reload flag for local development
+    command: ["base_fast_api", "--host", "0.0.0.0", "--port", "8000", "--reload"]
