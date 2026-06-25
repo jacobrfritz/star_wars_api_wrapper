@@ -15,13 +15,13 @@ This practice roadmap is structured to take you from writing your first API rout
 
 The goal of this phase is to get comfortable with the mechanics of proxying a request to an external server.
 
-[ ] Task 1.1: Environment Setup
+[x] Task 1.1: Environment Setup
 
 Set up a clean virtual environment and install dependencies (fastapi, uvicorn, httpx).
 
 Create a single entrypoint file (e.g., main.py).
 
-[ ] Task 1.2: The Basic Proxy
+[x] Task 1.2: The Basic Proxy
 
 Create a route /api/people/{id} in your FastAPI app.
 
