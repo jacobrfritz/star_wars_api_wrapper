@@ -29,7 +29,7 @@ Using an async HTTPX client, query the SWAPI endpoint: https://swapi.dev/api/peo
 
 Return the raw JSON exactly as SWAPI sends it to you.
 
-[ ] Task 1.3: Basic Error Forwarding
+[x] Task 1.3: Basic Error Forwarding
 
 What happens if the user requests character ID 9999? SWAPI returns a 404 Not Found.
 
