@@ -67,7 +67,7 @@ Create a new endpoint /api/characters-with-homes/{id}.
 
 This endpoint should fetch the character and then fetch their homeworld, merging the planet data (like name, climate) directly into the character's response dictionary.
 
-[ ] Task 3.2: Parallel Fetching (Async Magic)
+[x] Task 3.2: Parallel Fetching (Async Magic)
 
 SWAPI returns lists of URLs for a character's starships (e.g., ["starship_url_1", "starship_url_2"]).
 
