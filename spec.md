@@ -39,7 +39,7 @@ Update your router to capture SWAPI's error codes and raise an appropriate HTTPE
 
 The goal of this phase is to gain control over your data. You don't want to rely on the external API's variable naming conventions or extra bloat.
 
-[ ] Task 2.1: Define Your Internal Schemas
+[x] Task 2.1: Define Your Internal Schemas
 
 Use Pydantic models to define what your internal application expects.
 
