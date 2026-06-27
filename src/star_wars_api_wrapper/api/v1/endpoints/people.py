@@ -1,10 +1,16 @@
+import os
 import re
 from datetime import datetime
 from typing import Annotated, Any
 
 import httpx
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, BeforeValidator, HttpUrl
+
+load_dotenv()
+
+STAR_WARS_BASE_ENDPOINT = os.getenv("star_wars_api_endpoint")
 
 """
 People Input Format
@@ -80,7 +86,7 @@ class Person(BaseModel):
 @router.get("/people/{id}", response_model=Person)
 async def get_by_id(id: int) -> Any:
     async with httpx.AsyncClient() as client:
-        r = await client.get(f"https://swapi.info/api/people/{id}/")
+        r = await client.get(f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/")
         if r.status_code != 200:
             raise HTTPException(
                 status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
