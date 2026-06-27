@@ -51,7 +51,7 @@ Enforce your schema on your API route using FastAPI's response_model argument.
 
 Handle conversion edge cases (e.g., if SWAPI returns "unknown" for height, how does your integer-based schema handle it without crashing?).
 
-[ ] Task 2.3: Global API Configs
+[x] Task 2.3: Global API Configs
 
 Move your external base URL (https://swapi.dev/api) into a central settings config file or a .env file using pydantic-settings. Never hardcode raw URLs directly inside your route functions.
 
@@ -59,7 +59,7 @@ Move your external base URL (https://swapi.dev/api) into a central settings conf
 
 The goal of this phase is to learn how to aggregate data from multiple endpoints efficiently, which is a major use-case for internal gateways.
 
-[ ] Task 3.1: The "Composite" Endpoint
+[x] Task 3.1: The "Composite" Endpoint
 
 When you fetch a character from SWAPI, their "homeworld" is returned as a URL (e.g., https://swapi.dev/api/planets/1/).
 
