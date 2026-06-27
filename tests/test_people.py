@@ -71,6 +71,21 @@ def test_coercion_with_dirty_strings(mocker):
     assert data["mass"] == 77
 
 
+def test_unrecognized_number(mocker):
+    """Test that coercion return None for integer types that aren't numbers"""
+    mock_data = get_mock_swapi_data(height="unknown", mass="unknown")
+
+    mock_response = httpx.Response(200, json=mock_data)
+    mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
+
+    response = client.get("/people/1")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["height"] is None
+    assert data["mass"] is None
+
+
 def test_swapi_returns_error(mocker):
     """Test that your endpoint forwards the error if SWAPI fails."""
     mock_response = httpx.Response(404, text="Not Found")

@@ -60,8 +60,8 @@ router = APIRouter()
 
 class Person(BaseModel):
     name: str
-    height: Annotated[int, BeforeValidator(coerce_number)]
-    mass: Annotated[int, BeforeValidator(coerce_number)]
+    height: Annotated[int | None, BeforeValidator(coerce_number)]
+    mass: Annotated[int | None, BeforeValidator(coerce_number)]
     hair_color: str
     skin_color: str
     eye_color: str
@@ -77,13 +77,12 @@ class Person(BaseModel):
     url: HttpUrl
 
 
-@router.get("/people/{id}")
-async def get_by_id(id: int) -> Person:
+@router.get("/people/{id}", response_model=Person)
+async def get_by_id(id: int) -> Any:
     async with httpx.AsyncClient() as client:
         r = await client.get(f"https://swapi.info/api/people/{id}/")
         if r.status_code != 200:
             raise HTTPException(
                 status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
             )
-        print(r.json())
-        return Person(**r.json())
+        return r.json()

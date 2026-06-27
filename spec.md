@@ -45,7 +45,7 @@ Use Pydantic models to define what your internal application expects.
 
 Create a CharacterResponse schema that converts camel_case or unformatted data into clean, typed fields (e.g., Map SWAPI's birth_year to birthYear, parse height from a string to an integer).
 
-[ ] Task 2.2: Implement Response Models
+[x] Task 2.2: Implement Response Models
 
 Enforce your schema on your API route using FastAPI's response_model argument.
 
