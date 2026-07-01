@@ -1,13 +1,4 @@
 import httpx
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-
-from src.star_wars_api_wrapper.api.v1.endpoints.people import router
-
-# Setup local app for testing
-app = FastAPI()
-app.include_router(router)
-client = TestClient(app)
 
 
 # --- Mock Data Factory ---
@@ -36,7 +27,7 @@ def get_mock_swapi_data(height="172", mass="77"):
 # --- Tests ---
 
 
-def test_successful_mapping_and_coercion(mocker):
+def test_successful_mapping_and_coercion(client, mocker):
     """Test that a valid SWAPI response maps and coerces strings to ints."""
     mock_data = get_mock_swapi_data(height="172", mass="77")
 
@@ -45,7 +36,7 @@ def test_successful_mapping_and_coercion(mocker):
     mock_response = httpx.Response(200, json=mock_data)
     mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
 
-    response = client.get("/people/1")
+    response = client.get("/api/v1/people/1")
 
     assert response.status_code == 200
 
@@ -56,14 +47,14 @@ def test_successful_mapping_and_coercion(mocker):
     assert data["name"] == "Luke Skywalker"
 
 
-def test_coercion_with_dirty_strings(mocker):
+def test_coercion_with_dirty_strings(client, mocker):
     """Test that coercion strips away non-numeric characters (e.g. '77kg')."""
     mock_data = get_mock_swapi_data(height="172cm", mass="77kg")
 
     mock_response = httpx.Response(200, json=mock_data)
     mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
 
-    response = client.get("/people/1")
+    response = client.get("/api/v1/people/1")
 
     assert response.status_code == 200
     data = response.json()
@@ -71,14 +62,14 @@ def test_coercion_with_dirty_strings(mocker):
     assert data["mass"] == 77
 
 
-def test_unrecognized_number(mocker):
+def test_unrecognized_number(client, mocker):
     """Test that coercion return None for integer types that aren't numbers"""
     mock_data = get_mock_swapi_data(height="unknown", mass="unknown")
 
     mock_response = httpx.Response(200, json=mock_data)
     mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
 
-    response = client.get("/people/1")
+    response = client.get("/api/v1/people/1")
 
     assert response.status_code == 200
     data = response.json()
@@ -86,12 +77,12 @@ def test_unrecognized_number(mocker):
     assert data["mass"] is None
 
 
-def test_swapi_returns_error(mocker):
+def test_swapi_returns_error(client, mocker):
     """Test that your endpoint forwards the error if SWAPI fails."""
     mock_response = httpx.Response(404, text="Not Found")
     mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
 
-    response = client.get("/people/999")
+    response = client.get("/api/v1/people/999")
 
     assert response.status_code == 404
     assert "Swapi returned an error" in response.json()["detail"]

@@ -79,7 +79,7 @@ Do not use a sequential for loop (which blocks). Use asyncio.gather to execute t
 
 The goal of this phase is to make your wrapper fast, reliable, and capable of handling search queries.
 
-[ ] Task 4.1: Internal In-Memory Caching
+[x] Task 4.1: Internal In-Memory Caching
 
 External network requests are slow and expensive. Since Star Wars data rarely changes, create a simple in-memory cache mechanism (using a library like cachetools or Python's built-in dict with timestamps).
 

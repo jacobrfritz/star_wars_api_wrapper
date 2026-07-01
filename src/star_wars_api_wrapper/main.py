@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -22,7 +23,7 @@ logger = get_logger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[dict, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[dict[str, Any], None]:
     # 1. Initialize robust logging system on startup
     setup_logging(
         log_file=settings.LOG_FILE,
@@ -33,9 +34,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[dict, None]:
         backup_count=settings.LOG_BACKUP_COUNT,
     )
     logger.info("Starting up FastAPI application...")
-    
-    cache = dict()
-    
+
+    cache: dict[str, Any] = {}
+
     yield {"cache": cache}
     # Cleanup on shutdown
     logger.info("Shutting down FastAPI application...")
