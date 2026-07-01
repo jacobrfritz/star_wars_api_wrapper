@@ -3,7 +3,7 @@ from typing import Any
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from star_wars_api_wrapper import get_logger
 from star_wars_api_wrapper.schemas.characters_with_planets import CharacterWithPlanet
 from star_wars_api_wrapper.schemas.planet import Planet
@@ -53,24 +53,33 @@ router = APIRouter()
 
 
 @router.get("/character_with_planet/{id}", response_model=CharacterWithPlanet)
-async def get_by_id(id: int) -> Any:
-    async with httpx.AsyncClient() as client:
-        person_response = await client.get(f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/")
-        if person_response.status_code != 200:
-            raise HTTPException(
-                status_code=person_response.status_code,
-                detail=f"Swapi returned an error {person_response.text}",
-            )
-        homeworld = person_response.json().get("homeworld")
-        if homeworld:
-            planet_response = await client.get(homeworld)
-            if planet_response.status_code != 200:
-                raise HTTPException(
-                    status_code=planet_response.status_code,
-                    detail=f"Swapi returned an error {planet_response.text}",
-                )
-        else:
-            return None
-        character_with_planet = person_response.json()
-        character_with_planet["homeworld"] = Planet(**planet_response.json())
-        return character_with_planet
+async def get_by_id(id: int, request:Request) -> Any:
+  cache = request.state.cache
+  input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
+  if input_url in cache.keys():
+    return cache[input_url]
+  
+  async with httpx.AsyncClient() as client:
+      person_response = await client.get(input_url)
+      if person_response.status_code != 200:
+          raise HTTPException(
+              status_code=person_response.status_code,
+              detail=f"Swapi returned an error {person_response.text}",
+          )
+      homeworld_url = person_response.json().get("homeworld")
+      if homeworld_url:
+        if homeworld_url in cache.keys():
+          return cache[homeworld_url]
+          planet_response = await client.get(homeworld_url)
+          if planet_response.status_code != 200:
+              raise HTTPException(
+                  status_code=planet_response.status_code,
+                  detail=f"Swapi returned an error {planet_response.text}",
+              )
+      else:
+          return None
+      cache[input_url] = person_response.json()
+      cache[homeworld_url] = planet_response.json()
+      character_with_planet = person_response.json()
+      character_with_planet["homeworld"] = Planet(**planet_response.json())
+      return character_with_planet

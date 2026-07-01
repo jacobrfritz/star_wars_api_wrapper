@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[dict, None]:
     # 1. Initialize robust logging system on startup
     setup_logging(
         log_file=settings.LOG_FILE,
@@ -33,7 +33,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         backup_count=settings.LOG_BACKUP_COUNT,
     )
     logger.info("Starting up FastAPI application...")
-    yield
+    
+    cache = dict()
+    
+    yield {"cache": cache}
     # Cleanup on shutdown
     logger.info("Shutting down FastAPI application...")
 
