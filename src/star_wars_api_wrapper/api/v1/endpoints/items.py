@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
+
 from star_wars_api_wrapper.core.exceptions import NotFoundException
 from star_wars_api_wrapper.repositories.base import BaseItemsRepository
 from star_wars_api_wrapper.repositories.items import InMemoryItemsRepository

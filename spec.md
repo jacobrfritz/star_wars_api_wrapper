@@ -99,7 +99,7 @@ Instead of initializing a new httpx.AsyncClient inside every single route reques
 
 The goal of this phase is to make your gateway industrial-strength. It must handle third-party downtime gracefully.
 
-[ ] Task 5.1: Timeout & Retry Strategies
+[x] Task 5.1: Timeout & Retry Strategies
 
 What happens if SWAPI's servers are incredibly slow or completely down?
 
@@ -107,7 +107,7 @@ Set strict timeout limits on your outgoing httpx requests (e.g., fail fast if SW
 
 Implement a basic retry mechanism: if a request fails due to a network hiccup, try 2 more times before raising an error.
 
-[ ] Task 5.2: Graceful Degradation (Fallback Data)
+[] Task 5.2: Graceful Degradation (Fallback Data)
 
 If SWAPI goes completely offline, your service shouldn't just crash.
 

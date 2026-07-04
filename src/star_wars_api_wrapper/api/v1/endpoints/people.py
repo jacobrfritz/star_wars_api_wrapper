@@ -3,10 +3,14 @@ import re
 from datetime import datetime
 from typing import Annotated, Any
 
+import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from pydantic import BaseModel, BeforeValidator, HttpUrl
+
 from star_wars_api_wrapper import get_logger
+
+from ..utils.utils import fetch_from_api
 
 load_dotenv()
 
@@ -90,14 +94,20 @@ async def get_by_id(id: int, request: Request) -> Any:
     client = request.state.http_client
     cache = request.state.cache
     input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
-    if input_url in cache.keys():
+    if input_url in cache:
         logger.info("Loaded from Cache")
         return cache[input_url]
-    r = await client.get(input_url)
-    if r.status_code != 200:
-        raise HTTPException(
-            status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
-        )
-    cache[input_url] = r.json()
-    request.state.cache = cache
-    return r.json()
+    try:
+        r = await fetch_from_api(client, input_url)
+        cache[input_url] = r
+    except httpx.TimeoutException:
+        logger.warning("SWAPI took too long to respond (2.0s limit reached).")
+        raise
+    except httpx.NetworkError:
+        logger.warning("Network failed after initial attempt and 2 retries.")
+        raise
+    except httpx.HTTPStatusError as e:
+        logger.warning(f"SWAPI returned a bad status code: {e.response.status_code}")
+        raise
+
+    return r

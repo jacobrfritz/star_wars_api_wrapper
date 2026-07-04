@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from star_wars_api_wrapper.main import create_app
 
 

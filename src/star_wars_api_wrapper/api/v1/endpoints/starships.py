@@ -2,9 +2,13 @@ import asyncio
 import os
 from typing import Any
 
+import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
+
 from star_wars_api_wrapper import get_logger
+
+from ..utils.utils import fetch_from_api
 
 load_dotenv()
 
@@ -55,23 +59,31 @@ router = APIRouter()
 async def get_by_id(id: int, request: Request) -> Any:
     client = request.state.http_client
     input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
-    if input_url in request.state.cache.keys():
-        logger.info("loaded from cache")
-        return request.state.cache[input_url]
-    r = await client.get(input_url)
-    if r.status_code != 200:
-        raise HTTPException(
-            status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
-        )
-    person = r.json()
+    try:
+        if input_url in request.state.cache:
+            logger.info("loaded from cache")
+            return request.state.cache[input_url]
+        person = await fetch_from_api(client, input_url)
+        request.state.cache[input_url] = person
+    except httpx.TimeoutException:
+        logger.warning("SWAPI took too long to respond (2.0s limit reached).")
+        raise
+    except httpx.NetworkError:
+        logger.warning("Network failed after initial attempt and 2 retries.")
+        raise
+    except httpx.HTTPStatusError as e:
+        logger.warning(f"SWAPI returned a bad status code: {e.response.status_code}")
+        raise
+
     starships = person.get("starships")
     starship_tasks = list()
 
     if starships:
-        starship_tasks = [client.get(starship) for starship in starships]
+        starship_tasks = [fetch_from_api(client, starship) for starship in starships]
         starship_results = await asyncio.gather(*starship_tasks)
     else:
         return [None]
-    startship_results = [starship.json() for starship in starship_results]
-    request.state.cache[input_url] = startship_results
-    return startship_results
+    starship_results = [starship for starship in starship_results]
+    for starship, starship_result in zip(starships, starship_results, strict=True):
+        request.state.cache[starship] = starship_result
+    return starship_results

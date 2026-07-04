@@ -1,11 +1,15 @@
 import os
 from typing import Any
 
+import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
+
 from star_wars_api_wrapper import get_logger
 from star_wars_api_wrapper.schemas.characters_with_planets import CharacterWithPlanet
 from star_wars_api_wrapper.schemas.planet import Planet
+
+from ..utils.utils import fetch_from_api
 
 load_dotenv()
 
@@ -54,31 +58,55 @@ router = APIRouter()
 @router.get("/character_with_planet/{id}", response_model=CharacterWithPlanet)
 async def get_by_id(id: int, request: Request) -> Any:
     cache = request.state.cache
-    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
-    if input_url in cache.keys():
-        logger.info("loaded from cache")
-        return cache[input_url]
-
     client = request.state.http_client
-    person_response = await client.get(input_url)
-    if person_response.status_code != 200:
-        raise HTTPException(
-            status_code=person_response.status_code,
-            detail=f"Swapi returned an error {person_response.text}",
-        )
-    homeworld_url = person_response.json().get("homeworld")
-    if homeworld_url:
-        planet_response = await client.get(homeworld_url)
-        if planet_response.status_code != 200:
-            raise HTTPException(
-                status_code=planet_response.status_code,
-                detail=f"Swapi returned an error {planet_response.text}",
-            )
-    else:
-        return None
-    character_with_planet = {"person": person_response.json()}
-    character_with_planet["homeworld"] = Planet(**planet_response.json())
-    cache[input_url] = character_with_planet
+    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
+    character_with_planet_key = input_url + "with_planet"
 
-    request.state.cache = cache
+    if character_with_planet_key in cache:
+        logger.info("loaded from cache")
+        return cache[character_with_planet_key]
+
+    if input_url in cache:
+        logger.info("loaded from cache")
+        person_response = cache[input_url]
+    else:
+        try:
+            person_response = await fetch_from_api(client, input_url)
+            cache[input_url] = person_response
+        except httpx.TimeoutException:
+            logger.warning("SWAPI took too long to respond (2.0s limit reached.)")
+            raise
+        except httpx.NetworkError:
+            logger.warning("Network failed after initial attempt and 2 retries.")
+            raise
+        except httpx.HTTPStatusError as e:
+            logger.warning(
+                f"SWAPI returned a bad status code: {e.response.status_code}"
+            )
+            raise
+
+    homeworld_url = person_response.get("homeworld")
+
+    if not homeworld_url:
+        character_with_planet = {"person": person_response, "homeworld": None}
+        cache[character_with_planet_key] = character_with_planet
+        return character_with_planet
+
+    try:
+        planet_response = await fetch_from_api(client, homeworld_url)
+    except httpx.TimeoutException:
+        logger.warning("SWAPI took too long to respond (2.0s limit reached.)")
+        raise
+    except httpx.NetworkError:
+        logger.warning("Network failed after initial attempt and 2 retries.")
+        raise
+    except httpx.HTTPStatusError as e:
+        logger.warning(f"SWAPI returned a bad status code: {e.response.status_code}")
+        raise
+
+    character_with_planet = {
+        "person": person_response,
+        "homeworld": Planet(**planet_response),
+    }
+    cache[character_with_planet_key] = character_with_planet
     return character_with_planet

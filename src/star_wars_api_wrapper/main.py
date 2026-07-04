@@ -39,7 +39,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[dict[str, Any], None]:
     cache: dict[str, Any] = {}
 
     limits = httpx.Limits(max_keepalive_connections=5, max_connections=10)
-    async with httpx.AsyncClient(limits=limits) as client:
+    timeout = httpx.Timeout(2.0)
+
+    async with httpx.AsyncClient(limits=limits, timeout=timeout) as client:
         yield {"cache": cache, "http_client": client}
     # Cleanup on shutdown
     logger.info("Shutting down FastAPI application...")

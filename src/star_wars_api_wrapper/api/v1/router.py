@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from star_wars_api_wrapper.api.v1.endpoints import (
     characters_with_planets,
     health,

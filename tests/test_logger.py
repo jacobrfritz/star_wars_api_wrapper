@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+
 from star_wars_api_wrapper.logger import (
     ConsoleFormatter,
     JSONFormatter,
