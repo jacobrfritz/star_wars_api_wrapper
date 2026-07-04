@@ -5,7 +5,6 @@ import re
 from datetime import datetime
 from typing import Annotated, Any
 
-import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, BeforeValidator, HttpUrl
@@ -91,35 +90,35 @@ class Person(BaseModel):
 
 @router.get("/people_search/", response_model=list[Person])
 async def get_by_id(request: Request, person_name: str = "luke") -> Any:
-    async with httpx.AsyncClient() as client:
-        cache = request.state.cache
-        input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/?search={person_name}"
-        if input_url in cache.keys():
-            logger.info("Loaded from Cache")
-            return cache[input_url]
-        r = await client.get(input_url)
-        if r.status_code != 200:
-            raise HTTPException(
-                status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
-            )
+    cache = request.state.cache
+    client = request.state.http_client
 
-        people = r.json()
-        people_list = people.get("results", []) if isinstance(people, dict) else people
+    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/?search={person_name}"
+    if input_url in cache.keys():
+        logger.info("Loaded from Cache")
+        return cache[input_url]
 
-        tokenized_corpus = [
-            person.get("name").lower().split(" ") for person in people_list
-        ]
+    r = await client.get(input_url)
+    if r.status_code != 200:
+        raise HTTPException(
+            status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
+        )
 
-        names = [person.get("name") for person in people_list]
+    people = r.json()
+    people_list = people.get("results", []) if isinstance(people, dict) else people
 
-        bm25 = BM25Okapi(tokenized_corpus)
+    tokenized_corpus = [person.get("name").lower().split(" ") for person in people_list]
 
-        query = person_name
-        tokenized_query = query.lower().split(" ")
+    names = [person.get("name") for person in people_list]
 
-        top_n_results = bm25.get_top_n(tokenized_query, names, n=1)
+    bm25 = BM25Okapi(tokenized_corpus)
 
-        matched_people = [p for p in people_list if p.get("name") in top_n_results]
-        cache[input_url] = r.json()
-        request.state.cache = cache
-        return matched_people
+    query = person_name
+    tokenized_query = query.lower().split(" ")
+
+    top_n_results = bm25.get_top_n(tokenized_query, names, n=1)
+
+    matched_people = [p for p in people_list if p.get("name") in top_n_results]
+    cache[input_url] = r.json()
+    request.state.cache = cache
+    return matched_people

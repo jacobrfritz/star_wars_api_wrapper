@@ -2,7 +2,6 @@ import asyncio
 import os
 from typing import Any
 
-import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request
 from star_wars_api_wrapper import get_logger
@@ -54,26 +53,25 @@ router = APIRouter()
 
 @router.get("/starships/{id}")
 async def get_by_id(id: int, request: Request) -> Any:
-    async with httpx.AsyncClient() as client:
-        input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
-        if input_url in request.state.cache.keys():
-            logger.info("loaded from cache")
-            return request.state.cache[input_url]
-        r = await client.get(input_url)
-        if r.status_code != 200:
-            raise HTTPException(
-                status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
-            )
-        person = r.json()
-        starships = person.get("starships")
-        starship_tasks = list()
+    client = request.state.http_client
+    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
+    if input_url in request.state.cache.keys():
+        logger.info("loaded from cache")
+        return request.state.cache[input_url]
+    r = await client.get(input_url)
+    if r.status_code != 200:
+        raise HTTPException(
+            status_code=r.status_code, detail=f"Swapi returned an error {r.text}"
+        )
+    person = r.json()
+    starships = person.get("starships")
+    starship_tasks = list()
 
-        if starships:
-            async with httpx.AsyncClient() as client:
-                starship_tasks = [client.get(starship) for starship in starships]
-                starship_results = await asyncio.gather(*starship_tasks)
-        else:
-            return [None]
-        startship_results = [starship.json() for starship in starship_results]
-        request.state.cache[input_url] = startship_results
-        return startship_results
+    if starships:
+        starship_tasks = [client.get(starship) for starship in starships]
+        starship_results = await asyncio.gather(*starship_tasks)
+    else:
+        return [None]
+    startship_results = [starship.json() for starship in starship_results]
+    request.state.cache[input_url] = startship_results
+    return startship_results

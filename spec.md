@@ -91,7 +91,7 @@ SWAPI supports searching via query parameters: https://swapi.dev/api/people/?sea
 
 Implement a search route on your FastAPI app (/api/search?name=luke) that maps query parameters directly to the external search endpoint.
 
-[ ] Task 4.3: Custom Lifecycle Management
+[x] Task 4.3: Custom Lifecycle Management
 
 Instead of initializing a new httpx.AsyncClient inside every single route request, use FastAPI's lifespan event to create a single, shared HTTP client pool when the application starts, and safely tear it down when the app stops.
 
