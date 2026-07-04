@@ -85,7 +85,7 @@ External network requests are slow and expensive. Since Star Wars data rarely ch
 
 If a user requests character 1 twice, the second request should serve instantly from your memory cache without hitting the external SWAPI server.
 
-[ ] Task 4.2: Query Parameter Passthrough
+[x] Task 4.2: Query Parameter Passthrough
 
 SWAPI supports searching via query parameters: https://swapi.dev/api/people/?search=luke.
 
