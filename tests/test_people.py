@@ -86,3 +86,17 @@ def test_swapi_returns_error(client, mocker):
 
     assert response.status_code == 404
     assert "Swapi returned an error" in response.json()["detail"]
+
+
+def test_swapi_down(client, mocker):
+    """If swapi is down, return a cache or error message."""
+    mock_response = httpx.Response(
+        500,
+        text="Error",
+        request=httpx.Request("GET", "https://swapi.info/api/people/1"),
+    )
+    mocker.patch("httpx.AsyncClient.get", return_value=mock_response)
+    response = client.get("/api/v1/people/1")
+
+    assert response.status_code == 500
+    assert "Swapi returned an error" in response.json()["detail"]
