@@ -8,15 +8,15 @@ Goal: Understand raw HTTP traffic, JSON parsing, and manual browser page renderi
 
 Step 1.1: Local Gateway Setup
 
-[ ] Spin up your FastAPI backend server locally (running at http://localhost:8000 or equivalent).
+[x] Spin up your FastAPI backend server locally (running at http://localhost:8000 or equivalent).
 
-[ ] Verify the /api/v1/people/{id} endpoint behaves as expected using Swagger docs or curl.
+[x] Verify the /api/v1/people/{id} endpoint behaves as expected using Swagger docs or curl.
 
-[ ] Check CORS configuration on the FastAPI server to ensure your local frontend can hit it without being blocked.
+[x] Check CORS configuration on the FastAPI server to ensure your local frontend can hit it without being blocked.
 
 Step 1.2: Raw HTML Structure
 
-[ ] Create a local project workspace containing:
+[x] Create a local project workspace containing:
 
 index.html
 
@@ -30,15 +30,15 @@ A numeric input box (id="character-id-input")
 
 A submit button (id="fetch-btn")
 
-[ ] Add an empty card element (<div id="character-card"></div>) which acts as your target canvas.
+[x] Add an empty card element (<div id="character-card"></div>) which acts as your target canvas.
 
 Step 1.3: Imperative JavaScript Scripting
 
-[ ] Write an event listener in app.js to catch submission events from your search form and prevent the default browser refresh behavior.
+[x] Write an event listener in app.js to catch submission events from your search form and prevent the default browser refresh behavior.
 
-[ ] Write an asynchronous function using standard browser fetch() to call http://localhost:8000/api/v1/people/${id}.
+[x] Write an asynchronous function using standard browser fetch() to call http://localhost:8000/api/v1/people/${id}.
 
-[ ] Implement manual state parsing:
+[x] Implement manual state parsing:
 
 Extract the payload with .json() if response.ok is true.
 
