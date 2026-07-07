@@ -1,14 +1,12 @@
 import os
-import re
-from datetime import datetime
-from typing import Annotated, Any
+from typing import Any
 
 import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, Request
-from pydantic import BaseModel, BeforeValidator, HttpUrl
 
 from star_wars_api_wrapper import get_logger
+from star_wars_api_wrapper.schemas.people import Person
 
 from ..utils.utils import fetch_from_api
 
@@ -17,6 +15,33 @@ load_dotenv()
 logger = get_logger(__name__)
 
 STAR_WARS_BASE_ENDPOINT = os.getenv("star_wars_api_endpoint")
+
+router = APIRouter()
+
+
+@router.get("/people/{id}", response_model=Person)
+async def get_by_id(id: int, request: Request) -> Any:
+    client = request.state.http_client
+    cache = request.state.cache
+    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
+    if input_url in cache:
+        logger.info("Loaded from Cache")
+        return cache[input_url]
+    try:
+        r = await fetch_from_api(client, input_url)
+        cache[input_url] = r
+    except httpx.TimeoutException:
+        logger.warning("SWAPI took too long to respond (2.0s limit reached).")
+        raise
+    except httpx.NetworkError:
+        logger.warning("Network failed after initial attempt and 2 retries.")
+        raise
+    except httpx.HTTPStatusError as e:
+        logger.warning(f"SWAPI returned a bad status code: {e.response.status_code}")
+        raise
+
+    return r
+
 
 """
 People Input Format
@@ -52,62 +77,3 @@ People Input Format
 }
 
 """
-
-
-def coerce_number(number: Any) -> int | None:
-    if isinstance(number, int):
-        return number
-    elif isinstance(number, str):
-        match = re.search(r"\d+", number)
-        if match:
-            return int(match.group())
-        else:
-            return None
-    else:
-        return None
-
-
-router = APIRouter()
-
-
-class Person(BaseModel):
-    name: str
-    height: Annotated[int | None, BeforeValidator(coerce_number)]
-    mass: Annotated[int | None, BeforeValidator(coerce_number)]
-    hair_color: str
-    skin_color: str
-    eye_color: str
-    birth_year: str
-    gender: str
-    homeworld: HttpUrl
-    films: list[HttpUrl]
-    species: list[HttpUrl]
-    vehicles: list[HttpUrl]
-    starships: list[HttpUrl]
-    created: datetime
-    edited: datetime
-    url: HttpUrl
-
-
-@router.get("/people/{id}", response_model=Person)
-async def get_by_id(id: int, request: Request) -> Any:
-    client = request.state.http_client
-    cache = request.state.cache
-    input_url = f"{STAR_WARS_BASE_ENDPOINT}/people/{id}/"
-    if input_url in cache:
-        logger.info("Loaded from Cache")
-        return cache[input_url]
-    try:
-        r = await fetch_from_api(client, input_url)
-        cache[input_url] = r
-    except httpx.TimeoutException:
-        logger.warning("SWAPI took too long to respond (2.0s limit reached).")
-        raise
-    except httpx.NetworkError:
-        logger.warning("Network failed after initial attempt and 2 retries.")
-        raise
-    except httpx.HTTPStatusError as e:
-        logger.warning(f"SWAPI returned a bad status code: {e.response.status_code}")
-        raise
-
-    return r
