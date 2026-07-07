@@ -24,7 +24,7 @@ style.css
 
 app.js
 
-[ ] In index.html, add a form input group containing:
+[x] In index.html, add a form input group containing:
 
 A numeric input box (id="character-id-input")
 
