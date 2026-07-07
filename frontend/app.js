@@ -3,7 +3,7 @@ import {parse_people} from './people.js'
 async function on_button_click() {
     const person = document.getElementById('character-id-input');
 
-    let response = await fetch(`http://localhost:8000/api/v1/people/${person.value}`);
+    let response = await fetch(`http://localhost:8000/api/v1/people_search/?person_name=${person.value}`);
     const character_card = document.getElementById('character-card');
 
     if(response.ok == true){
